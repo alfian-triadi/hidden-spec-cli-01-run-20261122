@@ -60,15 +60,16 @@ class Tree {
   private readonly orig = new Map<string, string | null>();
   readonly now = new Map<string, string | null>();
   readonly moves: Array<readonly [string, string]> = [];
+  /** The file's content on disk (null when absent), read lazily and cached on first access. */
   original(p: string): string | null {
     if (!this.orig.has(p)) {
-      let v: string | null = null;
+      let diskText: string | null = null;
       try {
-        if (statSync(p).isFile()) v = readFileSync(p, 'utf8');
+        if (statSync(p).isFile()) diskText = readFileSync(p, 'utf8');
       } catch {
-        v = null;
+        diskText = null;
       }
-      this.orig.set(p, v);
+      this.orig.set(p, diskText);
     }
     return this.orig.get(p)!;
   }
